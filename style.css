@@ -1,0 +1,49 @@
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+.center{
+  text-align: center;
+  margin: 10px;
+  
+}
+
+#floatingTextarea{
+  padding: 10px ;
+  height: 150px;
+}
+
+#note {
+  margin: 10px;
+  padding: 10px;
+  flex-direction: column;
+  width: 18rem;
+  max-height: 250px;
+  border-bottom: none;
+
+}
+
+#section1{
+  height: 400px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+#clear-notes-button {
+  background-color: red; /* Change the background color */
+  color: white; /* Change the text color */
+  padding: 10px 20px; /* Change the padding */
+  border-radius: 5px; /* Add rounded corners */
+  margin-top: 10px; /* Add some margin */
+  font-size: 16px; /* Change the font size */
+  font-weight: bold; /* Make the text bold */
+  position: absolute;
+  right: 20px;
+}
+
+#clear-notes-button:hover {
+  background-color: #cc0000; /* Change the background color on hover */
+  cursor: pointer; /* Change the cursor to a pointer on hover */
+}

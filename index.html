@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Your Notes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  <link href="style.css" rel="stylesheet" type="text/css" />
+  <style>
+    #section1 {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .note {
+      width: calc(33.3% - 20px);
+      margin: 10px;
+    }
+
+    #clear-notes-button {
+      background-color: red;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    #clear-notes-button:hover {
+      background-color: #cc0000;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Magic Notes </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01"
+        aria-control>Add Notes</button>
+      <div class="collapse navbar-collapse" id="navbarColor01">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Coding Contests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search" id="search-form">
+          <input class="form-control me-2" id="search-input" type="search" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="center"> Welcome to Magic Notes</h1>
+  <div class="card my-4 mx-4">
+    <h5 class="card-header">Add a note</h5>
+    <div class="card-body">
+      <div class="form-floating">
+        <textarea class="form-control my-4 " id="floatingTextarea"></textarea>
+        <button class="btn btn-primary" id="add-note-button">Add Note</button>
+      </div>
+    </div>
+  </div>
+  <h2 class="center">Your Notes</h2>
+  <section id="section1">
+  </section>
+  <button id="clear-notes-button">Clear All Notes</button>
+  <script>
+    // Get references to the form, input, and notes container
+    const addNoteButton = document.querySelector("#add-note-button");
+    const notesContainer = document.querySelector("#section1");
+    const searchForm = document.querySelector("#search-form");
+    const searchInput = document.querySelector("#search-input");
+    const clearNotesButton = document.querySelector("#clear-notes-button");
+    let id = 0;
+
+    // Check if there are any saved notes in local storage and add them to the page
+    if (localStorage.getItem("notes")) {
+      notesContainer.innerHTML = localStorage.getItem("notes");
+    }
+
+    // Add an event listener to the form to search notes when submitted
+    searchForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      searchNotes();
+    });
+
+    // Add an event listener to the add note button to create a new note
+    addNoteButton.addEventListener("click", function () {
+      const noteText = document.querySelector("#floatingTextarea").value;
+      createNote(noteText);
+    });
+
+    // Add an event listener to the clear notes button to remove all notes
+    clearNotesButton.addEventListener("click", function () {
+      notesContainer.innerHTML = "";
+      localStorage.removeItem("notes");
+    });
+
+    // Create a new note and add it to the page
+    function createNote(noteText) {
+      // Create a new div to hold the note
+      const newNote = document.createElement("div");
+      newNote.setAttribute("id", id++);
+      newNote.classList.add("card", "text-center", "note");
+
+      // Create a header element to hold the date and time
+      const noteHeader = document.createElement("div");
+      noteHeader.classList.add("card-header");
+      const currentDate = new Date();
+      const date = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' + currentDate.getFullYear();
+      const time = currentDate.getHours() + ":" + currentDate.getMinutes();
+      noteHeader.textContent = date + "  " + time;
+      newNote.appendChild(noteHeader);
+
+      // Create a body element to hold the note text
+      const noteBody = document.createElement("div");
+      noteBody.classList.add("card-body");
+      const noteTextElement = document.createElement("p");
+      noteTextElement.classList.add("card-text");
+      noteTextElement.textContent = noteText;
+      noteBody.appendChild(noteTextElement);
+      newNote.appendChild(noteBody);
+
+      // Create a footer element to hold the delete button
+      const noteFooter = document.createElement("div");
+      noteFooter.classList.add("card-footer", "text-muted");
+      const deleteButton = document.createElement("button");
+      deleteButton.classList.add("btn", "btn-primary");
+      deleteButton.textContent = "Delete";
+      deleteButton.addEventListener("click", function () {
+        deleteNote(newNote.getAttribute("id"));
+      });
+      noteFooter.appendChild(deleteButton);
+      newNote.appendChild(noteFooter);
+
+      // Add the new note to the page
+      notesContainer.appendChild(newNote);
+      document.querySelector("#floatingTextarea").value = "";
+
+      // Save the notes to local storage
+      localStorage.setItem("notes", notesContainer.innerHTML);
+    }
+
+    // Delete a note from the page and local storage
+    function deleteNote(id) {
+      const note = document.querySelector("#" + id);
+      notesContainer.removeChild(note);
+      localStorage.setItem("notes", notesContainer.innerHTML);
+    }
+
+    // Search notes by text
+    function searchNotes() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const notes = document.querySelectorAll(".note");
+      notes.forEach(function (note) {
+        const noteText = note.querySelector(".card-text").textContent.toLowerCase();
+        if (noteText.includes(searchTerm)) {
+          note.style.display = "block";
+        } else {
+          note.style.display = "none";
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
